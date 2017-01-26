@@ -1,20 +1,27 @@
 // Lewie's Grow Box
 
-// Connect an Nokia5110 LCD Module:
+// Connect a Nokia5110 LCD Module:
+
 // RST to PIN 12 (pulse to reset module)
+#define LCD_PIN_RST 12
+
 // CE to PIN 11 (chip enable: this lets us send multiple bits over one pin)
+#define LCD_PIN_CE 11
+
 // Dc to PIN 10 (Data/Command: This lets us say if we are sending a command or data)
+#define LCD_PIN_DC 10
+
 // Din to PIN 9 (Serial data input - the actual data and/or command is sent on this pin)
-// Clk to PIN 8 (clock - this is how we tell the module that another bit is being sent)
+#define LCD_PIN_DIN 9
+
+// Clk to PIN 8 (Serial clock - this is how we tell the module that another bit is being sent)
+#define LCD_PIN_CLK 8
+
 // Vcc to nothing why does the module still work without power? this doesn't make sense...
 // BL to 3.3v (backlight - optional)
 // Gnd to GND (Ground... no doubt about it)
 
-#define LCD_PIN_RST 12
-#define LCD_PIN_CE 11
-#define LCD_PIN_DC 10
-#define LCD_PIN_DIN 9
-#define LCD_PIN_CLK 8
+// ---------------------------------------------------------
 
 #define LCD_SEND_COMMAND LOW
 #define LCD_SEND_DATA HIGH
