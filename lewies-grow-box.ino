@@ -10,14 +10,15 @@
 
 #include "lcd.h";
 #include "clock.h";
+#include "keypad.h";
 
 void setup() {
 
   LcdInitialize();
 
-  Serial.begin(9600);
-  while(!Serial);
-  Serial.println("setting up!");
+//  Serial.begin(9600);
+//  while(!Serial);
+//  Serial.println("setting up!");
 
   delay(200);
 
@@ -73,6 +74,11 @@ void loop() {
 
   LcdGoTo(0, 2);
   LcdWriteString(text);
+
+  LcdGoTo(0, 4);
+  LcdWriteString(" ");
+  LcdGoTo(0, 4);
+  LcdWriteString(keypadGetLabel());
 
   delay(250);
 
