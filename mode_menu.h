@@ -1,19 +1,22 @@
-#include "lcd.h";
+
 // TODO: Reasearch menu systems ....
 // See https://www.youtube.com/watch?v=VtZvf5T98FI
 
 void modeMenuStart(KeypadState keypadState) {
-  LcdClear();
-  LcdWriteInverted(true);
-  LcdWriteString("     MENU     ");
-  LcdWriteInverted(false);
-  LcdWriteString("A Time        ");
-  LcdWriteString("B             ");
-  LcdWriteString("C             ");
-  LcdWriteString("D             ");
-  LcdWriteInverted(true);
-  LcdWriteString("* Exit  # More");
-  LcdWriteInverted(false);
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE, BLACK);
+  display.setCursor(0, 0);
+  display.println("     MENU    ");
+  display.setTextColor(BLACK, WHITE);
+  display.println("A Time       ");
+  display.println("B Contrast   ");
+  display.println("C            ");
+  display.println("D            ");
+  display.setTextColor(BLACK, WHITE);
+  display.println("* Exit # More");
+  display.display();
 }
 
 bool menuLoop(KeypadState keypadState) {

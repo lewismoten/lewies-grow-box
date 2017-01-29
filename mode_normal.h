@@ -2,14 +2,16 @@
 #include<Time.h>
 #include <DS1307RTC.h>
 
-#include "lcd.h";
-#include "clock.h";
 
 void modeNormalStart(KeypadState keypadState) {
-  LcdClear();
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(BLACK, WHITE);
 }
 
 bool normalLoop(KeypadState keypadState) {
+
+
   // get current time
   tmElements_t tm;
   time_t t;
@@ -17,39 +19,37 @@ bool normalLoop(KeypadState keypadState) {
     t = makeTime(tm);
   }
 
-  String text = "";
-
-  // Line 1 - Day
-  text = "";
-  text += dayStr(weekday(t));
-  LcdGoTo(0, 0);
-  LcdWriteString(text);
+  String line1 = "";
+  line1 = "";
+  line1 += dayStr(weekday(t));
 
   // Line 2 - Date  
-  text = "";
-  text += monthShortStr(tm.Month);
-  text += " ";
-  text += tm.Day;
-  text += ", ";
-  text += tmYearToCalendar(tm.Year);
+  String line2 = "";
+  line2 += monthShortStr(tm.Month);
+  line2 += " ";
+  line2 += tm.Day;
+  line2 += ", ";
+  line2 += tmYearToCalendar(tm.Year);
+  if(tm.Day < 10) {
+    line2 += " ";
+  }
 
-  LcdGoTo(0, 1);
-  LcdWriteString(text);
+  String line3 = "";
+  line3 += hourFormat12(t);
+  line3 += ":";
+  if(tm.Minute < 10) line3 += "0";
+  line3 += tm.Minute;
+  line3 += ":";
+  if(tm.Second < 10) line3 += "0";
+  line3 += tm.Second;
+  line3 += " ";
+  line3 += isAM(t) ? "AM" : "PM";
   
-  // Line 3 - Time  
-  text = "";
-  text += hourFormat12(t);
-  text += ":";
-  if(tm.Minute < 10) text += "0";
-  text += tm.Minute;
-  text += ":";
-  if(tm.Second < 10) text += "0";
-  text += tm.Second;
-  text += " ";
-  text += isAM(t) ? "AM" : "PM";
-
-  LcdGoTo(0, 2);
-  LcdWriteString(text);
+  display.setCursor(0, 0);
+  display.println(line1);
+  display.println(line2);
+  display.println(line3);
+  display.display();
 
   return true;
 }
