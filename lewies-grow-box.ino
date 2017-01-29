@@ -16,6 +16,7 @@ unsigned long timeout = 0;
 
 // Clk, Din, DC, CE, RST
 Adafruit_PCD8544 display = Adafruit_PCD8544(8, 9, 10, 11, 12);
+//Adafruit_PCD8544 display = Adafruit_PCD8544(13,11,5,4,3); // optimal for hardware?
 
 #include "keypad.h"
 #include "mode_menu.h"
