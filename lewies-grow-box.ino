@@ -3,9 +3,12 @@
  * 
  * Create an automated growbox to assist with indoor gardening
  */
+#include <Wire.h>
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
+#include <Time.h>
+#include <DS1307RTC.h>
 
 #define MODE_NORMAL 0
 #define MODE_MENU 1
@@ -36,7 +39,6 @@ void setup() {
   //ClockSetup();
   modeNormalStart();
 }
-
 
 void loop() {
 

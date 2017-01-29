@@ -1,8 +1,3 @@
-#include <Wire.h>
-#include<Time.h>
-#include <DS1307RTC.h>
-
-
 void modeNormalStart() {
   display.clearDisplay();
   display.setTextSize(1);
