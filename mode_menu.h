@@ -1,8 +1,7 @@
 
 // TODO: Reasearch menu systems ....
 // See https://www.youtube.com/watch?v=VtZvf5T98FI
-
-void modeMenuStart(KeypadState keypadState) {
+void modeMenuStart() {
 
   display.clearDisplay();
   display.setTextSize(1);
@@ -19,13 +18,13 @@ void modeMenuStart(KeypadState keypadState) {
   display.display();
 }
 
-bool menuLoop(KeypadState keypadState) {
-  
-  if(keypadState.state == KEYPAD_STATE_DOWN && keypadState.key == KEYPAD_KEY_STAR) {
+bool menuLoop(KeyPad keypad) {
+
+
+  if(keypad.hasChanged && keypad.label == '*') {
     return false;
   }
 
-  // stay in this mode
   return true;
 }
 

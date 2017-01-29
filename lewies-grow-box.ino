@@ -18,9 +18,11 @@ unsigned long timeout = 0;
 Adafruit_PCD8544 display = Adafruit_PCD8544(8, 9, 10, 11, 12);
 //Adafruit_PCD8544 display = Adafruit_PCD8544(13,11,5,4,3); // optimal for hardware?
 
-#include "keypad.h"
+#include "KeyPad.h"
 #include "mode_menu.h"
 #include "mode_normal.h"
+
+KeyPad keypad = KeyPad();
 
 void setup() {
 
@@ -30,44 +32,41 @@ void setup() {
   // Show splash screen
   display.display();
   delay(500);
-  display.clearDisplay();
-  
   // This fixes the clock and syncs it up
   //ClockSetup();
-  KeypadState keypadState = keypadGetState();
-  modeNormalStart(keypadState);
+  modeNormalStart();
 }
 
 
 void loop() {
 
-  KeypadState keypadState = keypadGetState();
+  keypad.update();
 
-  if(keypadState.state == KEYPAD_STATE_DOWN || keypadState.state == KEYPAD_STATE_HOLD) {
+  if(keypad.isPressed) {
     // extend timeout any time input key is pressed
     timeout = millis() + MODE_TIMEOUT;
   }
 
-  if(MODE == MODE_NORMAL && keypadState.state == KEYPAD_STATE_DOWN) {
+  if(MODE == MODE_NORMAL && keypad.hasChanged && keypad.isPressed) {
     // Any time a key is pressed during the normal mode, jump to the menu
     MODE = MODE_MENU;
-    modeMenuStart(keypadState);
+    modeMenuStart();
     return;
   } else if(MODE != MODE_NORMAL && millis() > timeout) {
-    modeNormalStart(keypadState);
+    modeNormalStart();
     MODE = MODE_NORMAL;
     return;
   }
 
   bool retainMode = false;
   if(MODE == MODE_NORMAL) {
-    retainMode = normalLoop(keypadState);
+    retainMode = normalLoop();
   } else if(MODE == MODE_MENU) {
-    retainMode = menuLoop(keypadState);
+    retainMode = menuLoop(keypad);
   }
 
   if(!retainMode && MODE != MODE_NORMAL) {
     MODE = MODE_NORMAL;
-    modeNormalStart(keypadState);
+    modeNormalStart();
   }
 }

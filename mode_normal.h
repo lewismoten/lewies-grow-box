@@ -3,13 +3,13 @@
 #include <DS1307RTC.h>
 
 
-void modeNormalStart(KeypadState keypadState) {
+void modeNormalStart() {
   display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(BLACK, WHITE);
 }
 
-bool normalLoop(KeypadState keypadState) {
+bool normalLoop() {
 
 
   // get current time
