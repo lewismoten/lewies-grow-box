@@ -1,26 +1,24 @@
-#include <Wire.h>
-#include<Time.h>
-#include <DS1307RTC.h>
-
 /*
  * Lewie's Grow Box
  * 
  * Create an automated growbox to assist with indoor gardening
  */
 
+#define MODE_NORMAL 0
+#define MODE_MENU 1
+#define MODE_TIMEOUT 10 * 1000 // 10 seconds
+
 #include "lcd.h";
-#include "clock.h";
 #include "keypad.h";
+#include "mode_normal.h";
+#include "mode_menu.h";
+
+byte MODE = MODE_NORMAL;
+unsigned long timeout = 0;
 
 void setup() {
 
   LcdInitialize();
-
-//  Serial.begin(9600);
-//  while(!Serial);
-//  Serial.println("setting up!");
-
-  delay(200);
 
   // I think this is changing analog pins to "virtual" digital pins
   // ie - A5 becomes pins 14-21
@@ -29,57 +27,70 @@ void setup() {
 
   // This fixes the clock and syncs it up
   //ClockSetup();
-
+ 
 }
 
+
 void loop() {
+
+  KeypadState keypadState = keypadGetState();
+
+  if(keypadState.state == KEYPAD_STATE_DOWN || keypadState.state == KEYPAD_STATE_HOLD) {
+    // extend timeout any time input key is pressed
+    timeout = millis() + MODE_TIMEOUT;
+  }
+/*
+  //LcdClear();
+  LcdGoTo(0, 0);
+  LcdWriteString("Test");
   
-  // get current time
-  tmElements_t tm;
-  time_t t;
-  if (RTC.read(tm)) {
-    t = makeTime(tm);
+  LcdGoTo(0, 1);
+  String l1 = "Key: ";
+  l1 += keypadState.key;
+  l1 += " ";
+  LcdWriteString(l1);
+  LcdGoTo(0, 2);
+  String l2 = "Last Key: ";
+  l2 += keypadState.lastKey;
+  l2 += " ";
+  LcdWriteString(l2);
+  LcdGoTo(0, 3);
+  String l3 = "State: ";
+  l3 += keypadState.state;
+  l3 += "  ";
+  LcdWriteString(l3);
+  return;
+  */
+
+  if(MODE == MODE_NORMAL && keypadState.state == KEYPAD_STATE_DOWN) {
+    // Any time a key is pressed during the normal mode, jump to the menu
+    MODE = MODE_MENU;
+    modeMenuStart(keypadState);
+    return;
+  } else if(MODE != MODE_NORMAL && millis() > timeout) {
+    modeNormalStart(keypadState);
+    MODE = MODE_NORMAL;
+    return;
   }
 
-  String text = "";
+  bool retainMode = false;
+  if(MODE == MODE_NORMAL) {
+    retainMode = normalLoop(keypadState);
+  } else if(MODE == MODE_MENU) {
+    retainMode = menuLoop(keypadState);
+  } else {
+    String text = "MODE: ";
+    text += MODE;
+    text += " input: ";
+    text += keypadState.key;
+    text += "  ";
+    
+    LcdGoTo(0, 2);
+    LcdWriteString(text);
+  }
 
-  // Line 1 - Day
-  text = "";
-  text += dayStr(weekday(t));
-  LcdGoTo(0, 0);
-  LcdWriteString(text);
-
-  // Line 2 - Date  
-  text = "";
-  text += monthShortStr(tm.Month);
-  text += " ";
-  text += tm.Day;
-  text += ", ";
-  text += tmYearToCalendar(tm.Year);
-
-  LcdGoTo(0, 1);
-  LcdWriteString(text);
-  
-  // Line 3 - Time  
-  text = "";
-  text += hourFormat12(t);
-  text += ":";
-  if(tm.Minute < 10) text += "0";
-  text += tm.Minute;
-  text += ":";
-  if(tm.Second < 10) text += "0";
-  text += tm.Second;
-  text += " ";
-  text += isAM(t) ? "AM" : "PM";
-
-  LcdGoTo(0, 2);
-  LcdWriteString(text);
-
-  LcdGoTo(0, 4);
-  LcdWriteString(" ");
-  LcdGoTo(0, 4);
-  LcdWriteString(keypadGetLabel());
-
-  delay(250);
-
+  if(!retainMode && MODE != MODE_NORMAL) {
+    MODE = MODE_NORMAL;
+    modeNormalStart(keypadState);
+  }
 }

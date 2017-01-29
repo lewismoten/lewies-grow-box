@@ -38,7 +38,27 @@
 //   round down = 4
 #define KEYPAD_BIAS 4
 
-#define KEYPAD_NONE 0xFF // prefer -1, but bytes are not signed
+#define KEYPAD_KEY_NONE 0
+
+#define KEYPAD_KEY_1 1
+#define KEYPAD_KEY_2 2
+#define KEYPAD_KEY_3 3
+#define KEYPAD_KEY_4 5
+#define KEYPAD_KEY_5 6
+#define KEYPAD_KEY_6 7
+
+#define KEYPAD_KEY_7 9
+#define KEYPAD_KEY_8 10
+#define KEYPAD_KEY_9 11
+#define KEYPAD_KEY_0 14
+
+#define KEYPAD_KEY_A 4
+#define KEYPAD_KEY_B 8
+#define KEYPAD_KEY_C 12
+#define KEYPAD_KEY_D 16
+
+#define KEYPAD_KEY_STAR 13
+#define KEYPAD_KEY_HASH 15
 
 // This is the analog pin that the arduino will read from
 #define KEYPAD_ANALOG_PIN 1
@@ -48,6 +68,8 @@
 //  - Keypad resistence
 //  - Temperature
 static const int keypadValues[] = {
+  // Nothing
+    0,
 
   // [1]  [2]  [3]  [A]
     300, 309, 319, 329,
@@ -65,6 +87,7 @@ static const int keypadValues[] = {
 
 // These are the labels for each of the keys on the 4x4 key pad
 static const String keypadLabels[] = {
+  "",
 
   "1", "2", "3", "A",
   
@@ -76,6 +99,25 @@ static const String keypadLabels[] = {
 
 };
 
+byte lastKey = KEYPAD_KEY_NONE;
+bool keypadChanged = false;
+
+struct KeypadState {
+  String state;
+  byte key;
+  byte lastKey;
+};
+
+#define KEYPAD_STATE_NONE ""
+#define KEYPAD_STATE_DOWN "down"
+#define KEYPAD_STATE_HOLD "hold"
+#define KEYPAD_STATE_UP "up"
+
+KeypadState keypadState = {
+  KEYPAD_STATE_NONE,
+  KEYPAD_KEY_NONE,
+  KEYPAD_KEY_NONE
+};
 
 /**
  * Determine if the analog value is close to the
@@ -97,12 +139,12 @@ boolean keypadIsNear(int targetValue, int value) {
 /**
  * map the value to teh apropriate key index
  * @param {int} value A value between 0 and 1023
- * @returns {byte} A key between 0 and 15; or -1 if nothing matched
+ * @returns {byte} A key between 1 and 16; or 0 if nothing matched
  */
 byte keypadMapValue(int value) {
 
-  // Set our default value to -1 (no matching key)
-  byte key = KEYPAD_NONE;
+  // Set our default value to nothing pressed
+  byte key = KEYPAD_KEY_NONE;
 
   // Was something pressed?
   if(value != 0) {
@@ -129,21 +171,59 @@ byte keypadMapValue(int value) {
   return key;
   
 }
+
+void updateState(byte key) {
+  keypadState.lastKey = keypadState.key;
+  keypadState.key = key;  
+
+  if(keypadState.key == KEYPAD_KEY_NONE) {
+    if(keypadState.lastKey == keypadState.key) {
+      keypadState.state = KEYPAD_STATE_NONE;
+    } else {
+      keypadState.state = KEYPAD_STATE_UP;
+    }
+  } else if (keypadState.key == keypadState.lastKey) {
+    keypadState.state = KEYPAD_STATE_HOLD;
+  } else {
+    keypadState.state = KEYPAD_STATE_DOWN;
+  }
+
+}
+
+/**
+ * Get the key that was pressed
+ * @returns {signed byte} The key index that was pressed, otherwise -1
+ */
+byte keypadGetKey() {
+  // Read the keypad
+  int input = analogRead(KEYPAD_ANALOG_PIN);  
+
+
+  // Return key that input represents
+  byte key = keypadMapValue(input);
+
+  updateState(key);
+
+  return key;
+}
+
+KeypadState keypadGetState() {
+  keypadGetKey();
+  return keypadState;
+}
+  
 /**
  * Get the pressed keys label
  * @returns {String} The pressed keys label, otherwise empty string
  */
 String keypadGetLabel() {
 
-  // Read the keypad
-  int input = analogRead(KEYPAD_ANALOG_PIN);
-
   // What key does the input represent?
-  byte key = keypadMapValue(input);
+  byte key = keypadGetKey();
 
   // Return the keys label if we have it
   // otherwise nothing was pressed
-  return key == KEYPAD_NONE ? " " : keypadLabels[key];
+  return key == KEYPAD_KEY_NONE ? " " : keypadLabels[key];
 
 }
 

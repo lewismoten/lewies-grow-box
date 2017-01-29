@@ -1,4 +1,6 @@
 // Lewie's Grow Box
+#ifndef LCD_H
+#define LCD_H
 
 // Connect a Nokia5110 LCD Module:
 
@@ -67,6 +69,7 @@
 #include "font.h";
 
 int counter;
+bool writeInverted = false;
 
 // Tutorial Video https://www.youtube.com/watch?v=E6PUa4n2DnA
 // Example code with a font http://playground.arduino.cc/Code/PCD8544
@@ -82,8 +85,13 @@ void LcdWriteRaw(byte operation, byte payload) {
 void LcdWriteCmd(byte cmd) {
   LcdWriteRaw(LCD_SEND_COMMAND, cmd);
 }
-
+void LcdWriteInverted(bool isInverted) {
+  writeInverted = isInverted;
+}
 void LcdWriteData(byte data) {
+  if(writeInverted) {
+    data = ~data;
+  }
   LcdWriteRaw(LCD_SEND_DATA, data);
 }
 void LcdWriteCharacter(char character) {
@@ -106,17 +114,17 @@ void LcdWriteCharacters(char *characters) {
     LcdWriteCharacter(*characters++);
   }
 }
+void LcdGoTo(int x, int y) {
+  LcdWriteCmd(LCD_COMMAND_ADDRESS_X | x);
+  LcdWriteCmd(LCD_COMMAND_ADDRESS_Y | y);
+}
 void LcdClear() {
   int addresses = LCD_COLUMNS * LCD_ROWS;
   for(int i = 0; i < addresses; i++) {
     // Clear out the current address
     LcdWriteData(0x00);
   }
-}
-
-void LcdGoTo(int x, int y) {
-  LcdWriteCmd(LCD_COMMAND_ADDRESS_X | x);
-  LcdWriteCmd(LCD_COMMAND_ADDRESS_Y | y);
+  LcdGoTo(0, 0);
 }
 
 void LcdInitialize() {
@@ -151,3 +159,5 @@ void LcdInitialize() {
   LcdClear();
 
 }
+
+#endif

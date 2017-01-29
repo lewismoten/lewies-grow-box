@@ -1,4 +1,16 @@
 // Found at http://playground.arduino.cc/Code/PCD8544
+/*
+ * This is a list of printable ASCII character fonts
+ * in the lower ASCII character set
+ * 
+ * Starting as ASCII 20 at index 0
+ * 
+ * Each byte represents a column to create 
+ * a 5x8 pixel character
+ */
+
+#ifndef FONT_H
+#define FONT_H
 
 static const byte ASCII[][5] =
 {
@@ -99,3 +111,5 @@ static const byte ASCII[][5] =
 ,{0x10, 0x08, 0x08, 0x10, 0x08} // 7e ←
 ,{0x78, 0x46, 0x41, 0x46, 0x78} // 7f →
 };
+
+#endif
