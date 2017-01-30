@@ -46,6 +46,8 @@ class KeyPad {
     int code;
     bool hasChanged;
     bool isPressed;
+    bool isRepeat;
+    bool isNumber;
     int input;
     KeyPad();
     KeyPad(int pin, char* labels, int values[17]);
@@ -54,6 +56,8 @@ class KeyPad {
     int pinInput;
     char* mapLabels;
     int mapValues[17];
+    long started;
+    int repeatRate;
 };
 
 #endif

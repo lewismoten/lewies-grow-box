@@ -13,6 +13,7 @@ KeyPad::KeyPad() {
   for(int i = 0; i < 17; i++) {
     mapValues[i] = values[i];
   }
+  repeatRate = 250;
 }
 KeyPad::KeyPad(int pin, char* labels, int values[17]) {
   label = ' ';
@@ -24,6 +25,7 @@ KeyPad::KeyPad(int pin, char* labels, int values[17]) {
   for(int i = 0; i < sizeof(mapValues); i++) {
     mapValues[i] = values[i];
   }
+  repeatRate = 250;
 }
 
 void KeyPad::update() {
@@ -39,6 +41,16 @@ void KeyPad::update() {
   label = mapLabels[code];
   isPressed = code != 0;
   hasChanged = code != lastCode;
+  isNumber = label >= '0' && label <= '9';
+
+  long time_now = millis();
+  if(hasChanged) {
+    started = time_now;
+  } else if(isPressed && started + repeatRate < time_now) {
+    // trigger change again (hold and repeat while holding)
+    hasChanged = true;
+    started = time_now;
+  }
 }
 
 
