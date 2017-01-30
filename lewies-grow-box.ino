@@ -17,23 +17,30 @@
 byte MODE = MODE_NORMAL;
 unsigned long timeout = 0;
 
+#define LCD_CLK 8
+#define LCD_DIN 9
+#define LCD_DC 10
+#define LCD_CE 11
+#define LCD_RST 12
 #define LCD_BACKLIGHT 6
 // Clk, Din, DC, CE, RST
-Adafruit_PCD8544 display = Adafruit_PCD8544(8, 9, 10, 11, 12);
+Adafruit_PCD8544 display = Adafruit_PCD8544(LCD_CLK, LCD_DIN, LCD_DC, LCD_CE, LCD_RST);
 //Adafruit_PCD8544 display = Adafruit_PCD8544(13,11,5,4,3); // optimal for hardware?
-
 #include "KeyPad.h"
 #include "mode_menu.h"
 #include "mode_normal.h"
+#include "settings.h"
 
 KeyPad keypad = KeyPad();
 
 void setup() {
 
-  display.begin();
-  display.setContrast(50);
   pinMode(LCD_BACKLIGHT, OUTPUT);
   digitalWrite(LCD_BACKLIGHT, LOW);
+
+  display.begin(contrast, 0x04);
+  //display.setContrast(contrast);
+  display.setTextWrap(false);
 
   // Show splash screen
   display.display();
