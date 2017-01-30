@@ -55,7 +55,7 @@ void loop() {
   keypad.update();
 
   if(keypad.isPressed) {
-    digitalWrite(LCD_BACKLIGHT, HIGH);
+//    digitalWrite(LCD_BACKLIGHT, HIGH);
     // extend timeout any time input key is pressed
     timeout = millis() + MODE_TIMEOUT;
   }
