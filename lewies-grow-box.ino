@@ -17,6 +17,7 @@
 byte MODE = MODE_NORMAL;
 unsigned long timeout = 0;
 
+#define LCD_BACKLIGHT 6
 // Clk, Din, DC, CE, RST
 Adafruit_PCD8544 display = Adafruit_PCD8544(8, 9, 10, 11, 12);
 //Adafruit_PCD8544 display = Adafruit_PCD8544(13,11,5,4,3); // optimal for hardware?
@@ -31,6 +32,8 @@ void setup() {
 
   display.begin();
   display.setContrast(50);
+  pinMode(LCD_BACKLIGHT, OUTPUT);
+  digitalWrite(LCD_BACKLIGHT, LOW);
 
   // Show splash screen
   display.display();
@@ -45,6 +48,7 @@ void loop() {
   keypad.update();
 
   if(keypad.isPressed) {
+    digitalWrite(LCD_BACKLIGHT, HIGH);
     // extend timeout any time input key is pressed
     timeout = millis() + MODE_TIMEOUT;
   }
@@ -55,6 +59,7 @@ void loop() {
     modeMenuStart();
     return;
   } else if(MODE != MODE_NORMAL && millis() > timeout) {
+    digitalWrite(LCD_BACKLIGHT, LOW);
     modeNormalStart();
     MODE = MODE_NORMAL;
     return;
