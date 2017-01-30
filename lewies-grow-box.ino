@@ -38,8 +38,9 @@ void setup() {
   pinMode(LCD_BACKLIGHT, OUTPUT);
   digitalWrite(LCD_BACKLIGHT, LOW);
 
-  display.begin(contrast, 0x04);
-  //display.setContrast(contrast);
+  display.begin();
+  display.setContrast(contrast);
+
   display.setTextWrap(false);
 
   // Show splash screen

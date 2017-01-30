@@ -61,17 +61,11 @@ void timeMenu(KeyPad keypad) {
 void contrastMenu(KeyPad keypad) {
 
   if(keypad.hasChanged) {
-    if(keypad.label == 'A') {
+    if(keypad.label == 'A' && contrast_temp < 0x7f) {
       contrast_temp++;
-      if(contrast_temp > 0x7f) {
-        contrast_temp = 0x7f;
-      }
       display.setContrast(contrast_temp);
-    } else if(keypad.label == 'B') {
+    } else if(keypad.label == 'B' && contrast_temp > 0) {
       contrast_temp--;
-      if(contrast_temp < 0) {
-        contrast_temp = 0;
-      }
       display.setContrast(contrast_temp);
     } else if(keypad.label == 'C') {
       contrast = contrast_temp;
