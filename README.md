@@ -1,3 +1,5 @@
+![lewies-grow-box: Indoor grow box with a small LCD and keypad](docs/images/social-preview.png)
+
 # lewies-grow-box
 
 Automated indoor gardening.
